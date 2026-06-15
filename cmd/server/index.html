@@ -335,6 +335,7 @@ async function runCode() {
 
     let text = '';
     if (data.output) text += data.output;
+    if (data.result) text += (text ? '\n' : '') + '=> ' + data.result;
     if (data.error) {
       text += (text ? '\n' : '') + data.error;
       outputEl.className = 'error';

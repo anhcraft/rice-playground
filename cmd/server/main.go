@@ -103,7 +103,8 @@ type executeRequest struct {
 }
 
 type executeResponse struct {
-	Output string `json:"output"`
+	Output string `json:"output,omitempty"`
+	Result string `json:"result,omitempty"`
 	Error  string `json:"error,omitempty"`
 }
 
@@ -114,19 +115,19 @@ func handleExecute(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	output, err := runRiceCode(req.Code)
+	output, result, err := runRiceCode(req.Code)
 	if err != nil {
-		writeJSON(w, http.StatusOK, executeResponse{Output: output, Error: err.Error()})
+		writeJSON(w, http.StatusOK, executeResponse{Output: output, Result: result, Error: err.Error()})
 		return
 	}
 
-	writeJSON(w, http.StatusOK, executeResponse{Output: output})
+	writeJSON(w, http.StatusOK, executeResponse{Output: output, Result: result})
 }
 
-func runRiceCode(code string) (string, error) {
+func runRiceCode(code string) (string, string, error) {
 	tokens, err := frontend.Tokenize(code)
 	if err != nil {
-		return "", fmt.Errorf("tokenization error: %w", err)
+		return "", "", fmt.Errorf("tokenization error: %w", err)
 	}
 
 	parser := frontend.NewParser(tokens)
@@ -137,7 +138,7 @@ func runRiceCode(code string) (string, error) {
 		for i, e := range parser.Errors() {
 			errs = append(errs, fmt.Sprintf("#%d: %v", i+1, e))
 		}
-		return "", fmt.Errorf("parse errors:\n%s", strings.Join(errs, "\n"))
+		return "", "", fmt.Errorf("parse errors:\n%s", strings.Join(errs, "\n"))
 	}
 
 	var buf bytes.Buffer
@@ -151,18 +152,24 @@ func runRiceCode(code string) (string, error) {
 
 	runCfg := conf.NewDefaultRunConfig()
 
-	_, err = it.Interpret(ctx, astTree, runCfg)
+	val, err := it.Interpret(ctx, astTree, runCfg)
 	output := buf.String()
+
+	// Convert the returned value to a string representation
+	var result string
+	if val != nil {
+		result = fmt.Sprint(val)
+	}
 
 	if err != nil {
 		var re exec.RuntimeError
 		if errors.As(err, &re) {
-			return output, fmt.Errorf("%s", re.Stacktrace())
+			return output, result, fmt.Errorf("%s", re.Stacktrace())
 		}
-		return output, err
+		return output, result, err
 	}
 
-	return output, nil
+	return output, result, nil
 }
 
 func writeJSON(w http.ResponseWriter, status int, v interface{}) {
