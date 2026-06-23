@@ -201,6 +201,12 @@ import * as monaco from 'https://cdn.jsdelivr.net/npm/monaco-editor@0.55.1/+esm'
 const monarchDefFn = await fetch('/monarch.js').then(r => r.text());
 (0, eval)(monarchDefFn);
 
+function formatExecTime(ms) {
+  if (ms < 1) return (ms * 1000).toFixed(1) + '\u03BCs';
+  if (ms < 1000) return ms.toFixed(1) + 'ms';
+  return (ms / 1000).toFixed(2) + 's';
+}
+
 // Register Rice language
 const riceLanguage = monaco.languages.register({ id: 'rice' });
 monaco.languages.setMonarchTokensProvider('rice', _());
@@ -339,6 +345,9 @@ async function runCode() {
     if (data.error) {
       text += (text ? '\n' : '') + data.error;
       outputEl.className = 'error';
+    }
+    if (data.execTimeMs != null) {
+      text += (text ? '\n' : '') + '\n---\nExecuted in ' + formatExecTime(data.execTimeMs);
     }
     outputEl.textContent = text || '(no output)';
 

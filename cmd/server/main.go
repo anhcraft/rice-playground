@@ -103,9 +103,10 @@ type executeRequest struct {
 }
 
 type executeResponse struct {
-	Output string `json:"output,omitempty"`
-	Result string `json:"result,omitempty"`
-	Error  string `json:"error,omitempty"`
+	Output     string  `json:"output,omitempty"`
+	Result     string  `json:"result,omitempty"`
+	Error      string  `json:"error,omitempty"`
+	ExecTimeMs float64 `json:"execTimeMs"`
 }
 
 func handleExecute(w http.ResponseWriter, r *http.Request) {
@@ -115,13 +116,16 @@ func handleExecute(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	start := time.Now()
 	output, result, err := runRiceCode(req.Code)
+	elapsed := time.Since(start).Seconds() * 1000 // milliseconds
+
 	if err != nil {
-		writeJSON(w, http.StatusOK, executeResponse{Output: output, Result: result, Error: err.Error()})
+		writeJSON(w, http.StatusOK, executeResponse{Output: output, Result: result, Error: err.Error(), ExecTimeMs: elapsed})
 		return
 	}
 
-	writeJSON(w, http.StatusOK, executeResponse{Output: output, Result: result})
+	writeJSON(w, http.StatusOK, executeResponse{Output: output, Result: result, ExecTimeMs: elapsed})
 }
 
 func runRiceCode(code string) (string, string, error) {
