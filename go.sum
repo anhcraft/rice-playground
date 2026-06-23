@@ -4,5 +4,7 @@ github.com/anhcraft/rice v1.0.0 h1:a/CPYwXyjumGW+VzqeouMo4WL9cpRZrACLARViThUZk=
 github.com/anhcraft/rice v1.0.0/go.mod h1:q3PoriEjgmxfhqCZCC+rzD63hB2ExNd001U+MFV8kCg=
 github.com/anhcraft/rice v1.0.1 h1:57697zepdDq+OVpNfS7CvpQQzj3aOsGEa+9dq6T1ceY=
 github.com/anhcraft/rice v1.0.1/go.mod h1:q3PoriEjgmxfhqCZCC+rzD63hB2ExNd001U+MFV8kCg=
+github.com/anhcraft/rice v1.0.2 h1:ZY+czVohsP7OZ15RzyjQ7I/MDArM3gWLieDL7bJCBq0=
+github.com/anhcraft/rice v1.0.2/go.mod h1:q3PoriEjgmxfhqCZCC+rzD63hB2ExNd001U+MFV8kCg=
 github.com/go-chi/chi/v5 v5.3.0 h1:halUjDxhshgXHMrao5bB8eNBXo/rnzwr8m5m36glehM=
 github.com/go-chi/chi/v5 v5.3.0/go.mod h1:R+tYY2hNuVUUjxoPtqUdgBqevM9s9njzkTLutVsOCto=
