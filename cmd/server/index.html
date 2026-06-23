@@ -264,8 +264,12 @@ println(greet("World"));
 println(2 + 3 * 4);
 `;
 
+const STORAGE_KEY = 'rice-playground-code';
+const savedCode = localStorage.getItem(STORAGE_KEY);
+const initialCode = savedCode !== null ? savedCode : defaultCode;
+
 const editor = monaco.editor.create(document.getElementById('editor-container'), {
-  value: defaultCode,
+  value: initialCode,
   language: 'rice',
   theme: 'rice-dark',
   fontSize: 14,
@@ -279,6 +283,11 @@ const editor = monaco.editor.create(document.getElementById('editor-container'),
   insertSpaces: true,
   wordWrap: 'on',
   padding: { top: 8 },
+});
+
+// Save editor content to localStorage on change
+editor.onDidChangeModelContent(() => {
+  localStorage.setItem(STORAGE_KEY, editor.getValue());
 });
 
 // Resize handle
